@@ -18,10 +18,13 @@ public class LogsMessageService {
     @Value("${spring.application.name}")
     private String serviceName;
 
+    @Value("${rabbitmq.logs_queue.name}")
+    private String queueName;
+
     public void sendLogsMessage(String message) {
         try {
-            String json = new ObjectMapper().writeValueAsString(Map.of("name", serviceName, "message", message));
-            template.convertAndSend("logsMessage", json);
+            String json = new ObjectMapper().writeValueAsString(Map.of("name", serviceName, "data", message));
+            template.convertAndSend(queueName, json);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
